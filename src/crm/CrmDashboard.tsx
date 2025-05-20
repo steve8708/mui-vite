@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, Routes, Route } from "react-router-dom";
 import type {} from "@mui/x-date-pickers/themeAugmentation";
 import type {} from "@mui/x-charts/themeAugmentation";
 import type {} from "@mui/x-data-grid-pro/themeAugmentation";
@@ -10,8 +10,14 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import CrmAppNavbar from "./components/CrmAppNavbar";
 import CrmHeader from "./components/CrmHeader";
-import CrmMainContent from "./components/CrmMainContent";
 import CrmSideMenu from "./components/CrmSideMenu";
+import CrmMainDashboard from "./components/CrmMainDashboard";
+import Customers from "./pages/Customers";
+import Deals from "./pages/Deals";
+import Contacts from "./pages/Contacts";
+import Tasks from "./pages/Tasks";
+import Reports from "./pages/Reports";
+import Settings from "./pages/Settings";
 import AppTheme from "../shared-theme/AppTheme";
 import {
   chartsCustomizations,
@@ -55,7 +61,15 @@ export default function CrmDashboard() {
             }}
           >
             <CrmHeader />
-            <CrmMainContent />
+            <Routes>
+              <Route index element={<CrmMainDashboard />} />
+              <Route path="customers" element={<Customers />} />
+              <Route path="deals" element={<Deals />} />
+              <Route path="contacts" element={<Contacts />} />
+              <Route path="tasks" element={<Tasks />} />
+              <Route path="reports" element={<Reports />} />
+              <Route path="settings" element={<Settings />} />
+            </Routes>
             <Outlet />
           </Stack>
         </Box>

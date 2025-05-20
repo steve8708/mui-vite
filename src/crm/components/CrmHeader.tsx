@@ -6,7 +6,8 @@ import MenuButton from "../../dashboard/components/MenuButton";
 import ColorModeIconDropdown from "../../shared-theme/ColorModeIconDropdown";
 import CrmSearch from "./CrmSearch";
 import CrmNavbarBreadcrumbs from "./CrmNavbarBreadcrumbs";
-import CrmDateRangePicker from "./CrmDateRangePicker";
+import Button from "@mui/material/Button";
+import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 
 export default function CrmHeader() {
   return (
@@ -30,7 +31,13 @@ export default function CrmHeader() {
       </Stack>
       <Stack direction="row" sx={{ gap: 1 }}>
         <CrmSearch />
-        <CrmDateRangePicker />
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<CalendarTodayRoundedIcon />}
+        >
+          This Month
+        </Button>
         <MenuButton showBadge aria-label="Open notifications">
           <NotificationsRoundedIcon />
         </MenuButton>

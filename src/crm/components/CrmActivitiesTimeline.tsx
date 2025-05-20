@@ -4,13 +4,6 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
-import Timeline from "@mui/lab/Timeline";
-import TimelineItem from "@mui/lab/TimelineItem";
-import TimelineSeparator from "@mui/lab/TimelineSeparator";
-import TimelineConnector from "@mui/lab/TimelineConnector";
-import TimelineContent from "@mui/lab/TimelineContent";
-import TimelineDot from "@mui/lab/TimelineDot";
-import TimelineOppositeContent from "@mui/lab/TimelineOppositeContent";
 import Button from "@mui/material/Button";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
@@ -84,37 +77,44 @@ export default function CrmActivitiesTimeline() {
           </Button>
         </Stack>
 
-        <Timeline position="right" sx={{ m: 0, p: 0 }}>
+        <Box sx={{ p: 2 }}>
           {activities.map((activity) => (
-            <TimelineItem key={activity.id} sx={{ minHeight: "auto" }}>
-              <TimelineOppositeContent
-                sx={{ m: 0, p: 1, width: "80px", flex: "none" }}
-                color="text.secondary"
+            <Box
+              key={activity.id}
+              sx={{
+                display: "flex",
+                mb: 2,
+                gap: 2,
+                alignItems: "flex-start",
+              }}
+            >
+              <Box
+                sx={{
+                  bgcolor: `${activity.color}.main`,
+                  borderRadius: "50%",
+                  p: 0.75,
+                  display: "flex",
+                  color: "white",
+                }}
               >
-                <Typography variant="caption">{activity.time}</Typography>
-              </TimelineOppositeContent>
-              <TimelineSeparator>
-                <TimelineDot
-                  color={
-                    activity.color as "primary" | "success" | "warning" | "info"
-                  }
-                  sx={{ m: 0, p: 0.75 }}
-                >
-                  {activity.icon}
-                </TimelineDot>
-                {activity.id < activities.length && <TimelineConnector />}
-              </TimelineSeparator>
-              <TimelineContent sx={{ py: "6px", px: 2 }}>
-                <Typography variant="subtitle2" component="span">
-                  {activity.title}
-                </Typography>
+                {activity.icon}
+              </Box>
+              <Box sx={{ flexGrow: 1 }}>
+                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                  <Typography variant="subtitle2" component="span">
+                    {activity.title}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {activity.time}
+                  </Typography>
+                </Box>
                 <Typography variant="body2" color="text.secondary">
                   {activity.description}
                 </Typography>
-              </TimelineContent>
-            </TimelineItem>
+              </Box>
+            </Box>
           ))}
-        </Timeline>
+        </Box>
       </CardContent>
     </Card>
   );

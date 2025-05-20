@@ -4,12 +4,6 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import CrmDashboard from "./crm/CrmDashboard";
-import Customers from "./crm/pages/Customers";
-import Deals from "./crm/pages/Deals";
-import Contacts from "./crm/pages/Contacts";
-import Tasks from "./crm/pages/Tasks";
-import Settings from "./crm/pages/Settings";
-import Reports from "./crm/pages/Reports";
 
 function NotFound() {
   return (
@@ -37,15 +31,7 @@ export default function App() {
     <BrowserRouter>
       <CssBaseline enableColorScheme />
       <Routes>
-        <Route path="/" element={<CrmDashboard />}>
-          <Route index element={<CrmDashboard />} />
-          <Route path="customers" element={<Customers />} />
-          <Route path="deals" element={<Deals />} />
-          <Route path="contacts" element={<Contacts />} />
-          <Route path="tasks" element={<Tasks />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="settings" element={<Settings />} />
-        </Route>
+        <Route path="/*" element={<CrmDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
