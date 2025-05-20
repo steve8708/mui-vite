@@ -1,71 +1,71 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import { animated, useSpring } from '@react-spring/web';
+import * as React from "react";
+import PropTypes from "prop-types";
+import clsx from "clsx";
+import { animated, useSpring } from "@react-spring/web";
 
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Collapse from '@mui/material/Collapse';
-import Typography from '@mui/material/Typography';
-import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import { useTreeItem } from '@mui/x-tree-view/useTreeItem';
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Collapse from "@mui/material/Collapse";
+import Typography from "@mui/material/Typography";
+import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
+import { useTreeItem } from "@mui/x-tree-view/useTreeItem";
 import {
   TreeItemContent,
   TreeItemIconContainer,
   TreeItemLabel,
   TreeItemRoot,
-} from '@mui/x-tree-view/TreeItem';
-import { TreeItemIcon } from '@mui/x-tree-view/TreeItemIcon';
-import { TreeItemProvider } from '@mui/x-tree-view/TreeItemProvider';
+} from "@mui/x-tree-view/TreeItem";
+import { TreeItemIcon } from "@mui/x-tree-view/TreeItemIcon";
+import { TreeItemProvider } from "@mui/x-tree-view/TreeItemProvider";
 
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from "@mui/material/styles";
 
 const ITEMS = [
   {
-    id: '1',
-    label: 'Website',
+    id: "1",
+    label: "Website",
     children: [
-      { id: '1.1', label: 'Home', color: 'green' },
-      { id: '1.2', label: 'Pricing', color: 'green' },
-      { id: '1.3', label: 'About us', color: 'green' },
+      { id: "1.1", label: "Home", color: "green" },
+      { id: "1.2", label: "Pricing", color: "green" },
+      { id: "1.3", label: "About us", color: "green" },
       {
-        id: '1.4',
-        label: 'Blog',
+        id: "1.4",
+        label: "Blog",
         children: [
-          { id: '1.1.1', label: 'Announcements', color: 'blue' },
-          { id: '1.1.2', label: 'April lookahead', color: 'blue' },
-          { id: '1.1.3', label: "What's new", color: 'blue' },
-          { id: '1.1.4', label: 'Meet the team', color: 'blue' },
+          { id: "1.1.1", label: "Announcements", color: "blue" },
+          { id: "1.1.2", label: "April lookahead", color: "blue" },
+          { id: "1.1.3", label: "What's new", color: "blue" },
+          { id: "1.1.4", label: "Meet the team", color: "blue" },
         ],
       },
     ],
   },
   {
-    id: '2',
-    label: 'Store',
+    id: "2",
+    label: "Store",
     children: [
-      { id: '2.1', label: 'All products', color: 'green' },
+      { id: "2.1", label: "All products", color: "green" },
       {
-        id: '2.2',
-        label: 'Categories',
+        id: "2.2",
+        label: "Categories",
         children: [
-          { id: '2.2.1', label: 'Gadgets', color: 'blue' },
-          { id: '2.2.2', label: 'Phones', color: 'blue' },
-          { id: '2.2.3', label: 'Wearables', color: 'blue' },
+          { id: "2.2.1", label: "Gadgets", color: "blue" },
+          { id: "2.2.2", label: "Phones", color: "blue" },
+          { id: "2.2.3", label: "Wearables", color: "blue" },
         ],
       },
-      { id: '2.3', label: 'Bestsellers', color: 'green' },
-      { id: '2.4', label: 'Sales', color: 'green' },
+      { id: "2.3", label: "Bestsellers", color: "green" },
+      { id: "2.4", label: "Sales", color: "green" },
     ],
   },
-  { id: '4', label: 'Contact', color: 'blue' },
-  { id: '5', label: 'Help', color: 'blue' },
+  { id: "4", label: "Contact", color: "blue" },
+  { id: "5", label: "Help", color: "blue" },
 ];
 
 function DotIcon({ color }) {
   return (
-    <Box sx={{ marginRight: 1, display: 'flex', alignItems: 'center' }}>
+    <Box sx={{ marginRight: 1, display: "flex", alignItems: "center" }}>
       <svg width={6} height={6}>
         <circle cx={3} cy={3} r={3} fill={color} />
       </svg>
@@ -106,12 +106,12 @@ function CustomLabel({ color, expandable, children, ...other }) {
 
   const iconColor = color ? colors[color] : null;
   return (
-    <TreeItemLabel {...other} sx={{ display: 'flex', alignItems: 'center' }}>
+    <TreeItemLabel {...other} sx={{ display: "flex", alignItems: "center" }}>
       {iconColor && <DotIcon color={iconColor} />}
       <Typography
         className="labelText"
         variant="body2"
-        sx={{ color: 'text.primary' }}
+        sx={{ color: "text.primary" }}
       >
         {children}
       </Typography>
@@ -121,7 +121,7 @@ function CustomLabel({ color, expandable, children, ...other }) {
 
 CustomLabel.propTypes = {
   children: PropTypes.node,
-  color: PropTypes.oneOf(['blue', 'green']),
+  color: PropTypes.oneOf(["blue", "green"]),
   expandable: PropTypes.bool,
 };
 
@@ -145,7 +145,7 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(props, ref) {
       <TreeItemRoot {...getRootProps(other)}>
         <TreeItemContent
           {...getContentProps({
-            className: clsx('content', {
+            className: clsx("content", {
               expanded: status.expanded,
               selected: status.selected,
               focused: status.focused,
@@ -163,7 +163,7 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(props, ref) {
         </TreeItemContent>
         {children && (
           <TransitionComponent
-            {...getGroupTransitionProps({ className: 'groupTransition' })}
+            {...getGroupTransitionProps({ className: "groupTransition" })}
           />
         )}
       </TreeItemRoot>
@@ -200,7 +200,7 @@ export default function CustomizedTreeView() {
   return (
     <Card
       variant="outlined"
-      sx={{ display: 'flex', flexDirection: 'column', gap: '8px', flexGrow: 1 }}
+      sx={{ display: "flex", flexDirection: "column", gap: "8px", flexGrow: 1 }}
     >
       <CardContent>
         <Typography component="h2" variant="subtitle2">
@@ -210,14 +210,14 @@ export default function CustomizedTreeView() {
           items={ITEMS}
           aria-label="pages"
           multiSelect
-          defaultExpandedItems={['1', '1.1']}
-          defaultSelectedItems={['1.1', '1.1.1']}
+          defaultExpandedItems={["1", "1.1"]}
+          defaultSelectedItems={["1.1", "1.1.1"]}
           sx={{
-            m: '0 -8px',
-            pb: '8px',
-            height: 'fit-content',
+            m: "0 -8px",
+            pb: "8px",
+            height: "fit-content",
             flexGrow: 1,
-            overflowY: 'auto',
+            overflowY: "auto",
           }}
           slots={{ item: CustomTreeItem }}
         />

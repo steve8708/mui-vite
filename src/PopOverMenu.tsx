@@ -1,5 +1,5 @@
-import { Button, Menu, MenuItem } from '@mui/material';
-import * as React from 'react';
+import { Button, Menu, MenuItem } from "@mui/material";
+import * as React from "react";
 
 export default function PopoverMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -15,9 +15,9 @@ export default function PopoverMenu() {
     <React.Fragment>
       <Button
         id="basic-button"
-        aria-controls={open ? 'basic-menu' : undefined}
+        aria-controls={open ? "basic-menu" : undefined}
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
+        aria-expanded={open ? "true" : undefined}
         onClick={handleClick}
       >
         Popover Menu
@@ -28,7 +28,7 @@ export default function PopoverMenu() {
         open={open}
         onClose={handleClose}
         MenuListProps={{
-          'aria-labelledby': 'basic-button',
+          "aria-labelledby": "basic-button",
         }}
       >
         <MenuItem onClick={handleClose} className="py-2">

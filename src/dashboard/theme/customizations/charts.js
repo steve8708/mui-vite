@@ -1,6 +1,6 @@
-import { axisClasses, legendClasses, chartsGridClasses } from '@mui/x-charts';
+import { axisClasses, legendClasses, chartsGridClasses } from "@mui/x-charts";
 
-import { gray } from '../../../shared-theme/themePrimitives';
+import { gray } from "../../../shared-theme/themePrimitives";
 
 /* eslint-disable import/prefer-default-export */
 export const chartsCustomizations = {
@@ -15,7 +15,7 @@ export const chartsCustomizations = {
           fill: gray[500],
           fontWeight: 500,
         },
-        ...theme.applyStyles('dark', {
+        ...theme.applyStyles("dark", {
           [`& .${axisClasses.line}`]: {
             stroke: gray[700],
           },
@@ -32,14 +32,14 @@ export const chartsCustomizations = {
     styleOverrides: {
       mark: ({ theme }) => ({
         ry: 6,
-        boxShadow: 'none',
+        boxShadow: "none",
         border: `1px solid ${(theme.vars || theme).palette.divider}`,
       }),
       table: ({ theme }) => ({
         border: `1px solid ${(theme.vars || theme).palette.divider}`,
         borderRadius: theme.shape.borderRadius,
-        background: 'hsl(0, 0%, 100%)',
-        ...theme.applyStyles('dark', {
+        background: "hsl(0, 0%, 100%)",
+        ...theme.applyStyles("dark", {
           background: gray[900],
         }),
       }),
@@ -59,13 +59,13 @@ export const chartsCustomizations = {
       root: ({ theme }) => ({
         [`& .${chartsGridClasses.line}`]: {
           stroke: gray[200],
-          strokeDasharray: '4 2',
+          strokeDasharray: "4 2",
           strokeWidth: 0.8,
         },
-        ...theme.applyStyles('dark', {
+        ...theme.applyStyles("dark", {
           [`& .${chartsGridClasses.line}`]: {
             stroke: gray[700],
-            strokeDasharray: '4 2',
+            strokeDasharray: "4 2",
             strokeWidth: 0.8,
           },
         }),

@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { useColorScheme } from '@mui/material/styles';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import * as React from "react";
+import { useColorScheme } from "@mui/material/styles";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 
 export default function ColorModeSelect(props) {
   const { mode, setMode } = useColorScheme();
@@ -13,7 +13,7 @@ export default function ColorModeSelect(props) {
       value={mode}
       onChange={(event) => setMode(event.target.value)}
       SelectDisplayProps={{
-        'data-screenshot': 'toggle-mode',
+        "data-screenshot": "toggle-mode",
       }}
       {...props}
     >
