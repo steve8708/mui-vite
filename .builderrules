@@ -1,0 +1,1 @@
+Make sure when generating with MUI components look at the examples in src/* for correct usage of this code on the specific MUI versions we use and patterns we want to replicate.
