@@ -5,6 +5,7 @@ import Link from "@mui/material/Link";
 import Slider from "@mui/material/Slider";
 import PopoverMenu from "./PopOverMenu";
 import ProTip from "./ProTip";
+import { BrowserRouter, Routes, Route, Link as RouterLink } from "react-router-dom";
 
 function Copyright() {
   return (
@@ -27,21 +28,41 @@ function Copyright() {
 
 export default function App() {
   return (
-    <Container maxWidth="sm">
-      <div className="my-4">
-        <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
-          Material UI Vite example with Tailwind CSS in TypeScript
-        </Typography>
-        <Slider
-          className="my-4"
-          defaultValue={30}
-          classes={{ active: "shadow-none" }}
-          slotProps={{ thumb: { className: "hover:shadow-none" } }}
-        />
-        <PopoverMenu />
-        <ProTip />
-        <Copyright />
-      </div>
-    </Container>
+    <BrowserRouter>
+      <Container maxWidth="sm">
+        <div className="my-4">
+          <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
+            Material UI Vite example with Tailwind CSS in TypeScript
+          </Typography>
+          <nav style={{ marginBottom: 16 }}>
+            <Link component={RouterLink} to="/" sx={{ mr: 2 }}>
+              Home
+            </Link>
+            <Link component={RouterLink} to="/second">
+              Second Page
+            </Link>
+          </nav>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <Slider
+                    className="my-4"
+                    defaultValue={30}
+                    classes={{ active: "shadow-none" }}
+                    slotProps={{ thumb: { className: "hover:shadow-none" } }}
+                  />
+                  <PopoverMenu />
+                  <ProTip />
+                </>
+              }
+            />
+            <Route path="/second" element={<Typography variant="h6">This is the second page!</Typography>} />
+          </Routes>
+          <Copyright />
+        </div>
+      </Container>
+    </BrowserRouter>
   );
 }
