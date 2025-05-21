@@ -43,7 +43,7 @@ export default function CustomerEditDialog({
         return {
           ...prev,
           [parent]: {
-            ...prev[parent as keyof User],
+            ...(prev[parent as keyof User] || {}),
             [child]: value,
           },
         };
@@ -64,7 +64,10 @@ export default function CustomerEditDialog({
     onClose();
   };
 
+  // Return null if user or formData is not available
   if (!user || !formData) return null;
+
+  const fullName = `${formData.name?.first || ""} ${formData.name?.last || ""}`;
 
   return (
     <Dialog
@@ -83,13 +86,11 @@ export default function CustomerEditDialog({
         <DialogContent>
           <Box sx={{ display: "flex", alignItems: "center", mb: 3, mt: 1 }}>
             <Avatar
-              src={user.picture.thumbnail}
-              alt={`${user.name.first} ${user.name.last}`}
+              src={user.picture?.thumbnail}
+              alt={fullName}
               sx={{ width: 64, height: 64, mr: 2 }}
             />
-            <Typography variant="h6">
-              {user.name.first} {user.name.last}
-            </Typography>
+            <Typography variant="h6">{fullName}</Typography>
           </Box>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
