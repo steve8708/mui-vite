@@ -431,20 +431,27 @@ export default function CustomerTable({ onEditClick }: CustomerTableProps) {
       width: 60,
       sortable: false,
       filterable: false,
-      renderCell: (params) => (
-        <Avatar
-          src={params.row.picture.thumbnail}
-          alt={`${params.row.name.first} ${params.row.name.last}`}
-        />
-      ),
+      renderCell: (params) => {
+        if (!params.row || !params.row.picture || !params.row.name) {
+          return <Avatar>?</Avatar>;
+        }
+        return (
+          <Avatar
+            src={params.row.picture.thumbnail}
+            alt={`${params.row.name.first || ""} ${params.row.name.last || ""}`}
+          />
+        );
+      },
     },
     {
       field: "name",
       headerName: "Name",
       flex: 1,
       minWidth: 180,
-      valueGetter: (params) =>
-        `${params.row.name.first} ${params.row.name.last}`,
+      valueGetter: (params) => {
+        if (!params.row || !params.row.name) return "";
+        return `${params.row.name.first || ""} ${params.row.name.last || ""}`;
+      },
     },
     {
       field: "email",
@@ -463,29 +470,45 @@ export default function CustomerTable({ onEditClick }: CustomerTableProps) {
       headerName: "Location",
       flex: 1,
       minWidth: 180,
-      valueGetter: (params) =>
-        `${params.row.location.city}, ${params.row.location.country}`,
+      valueGetter: (params) => {
+        if (!params.row || !params.row.location) return "";
+        return `${params.row.location.city || ""}, ${params.row.location.country || ""}`;
+      },
     },
     {
       field: "registered",
       headerName: "Customer Since",
       flex: 1,
       minWidth: 150,
-      valueGetter: (params) =>
-        new Date(params.row.registered.date).toLocaleDateString(),
+      valueGetter: (params) => {
+        if (
+          !params.row ||
+          !params.row.registered ||
+          !params.row.registered.date
+        )
+          return "";
+        try {
+          return new Date(params.row.registered.date).toLocaleDateString();
+        } catch (e) {
+          return "";
+        }
+      },
     },
     {
       field: "actions",
       type: "actions",
       headerName: "Actions",
       width: 100,
-      getActions: (params) => [
-        <GridActionsCellItem
-          icon={<EditIcon />}
-          label="Edit"
-          onClick={() => onEditClick(params.row)}
-        />,
-      ],
+      getActions: (params) => {
+        if (!params.row) return [];
+        return [
+          <GridActionsCellItem
+            icon={<EditIcon />}
+            label="Edit"
+            onClick={() => onEditClick(params.row)}
+          />,
+        ];
+      },
     },
   ];
 
@@ -504,9 +527,14 @@ export default function CustomerTable({ onEditClick }: CustomerTableProps) {
     );
   }
 
+  // Ensure we always have valid data to render
+  const validUsers = users.filter(
+    (user) => user && user.id && user.name && user.email && user.location,
+  );
+
   return (
     <DataGrid
-      rows={users}
+      rows={validUsers}
       columns={columns}
       getRowClassName={(params) =>
         params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
