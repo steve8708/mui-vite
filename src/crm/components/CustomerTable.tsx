@@ -1,6 +1,6 @@
 import * as React from "react";
 import {
-  DataGrid,
+  DataGridPro,
   GridColDef,
   GridActionsCellItem,
 } from "@mui/x-data-grid-pro";
@@ -149,7 +149,7 @@ export default function CustomerTable({ onEditClick }: CustomerTableProps) {
   }
 
   return (
-    <DataGrid
+    <DataGridPro
       rows={users}
       columns={columns}
       getRowClassName={(params) =>
