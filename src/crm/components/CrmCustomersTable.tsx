@@ -33,72 +33,114 @@ const columns: GridColDef[] = [
     sortable: false,
     filterable: false,
     disableColumnMenu: true,
-    renderCell: (params: GridRenderCellParams<Customer>) => (
-      <Avatar
-        src={params.row.picture.thumbnail}
-        alt={`${params.row.name.first} ${params.row.name.last}`}
-      />
-    ),
+    renderCell: (params: GridRenderCellParams<Customer>) => {
+      if (!params.row || !params.row.picture || !params.row.name) {
+        return <Avatar>?</Avatar>;
+      }
+      return (
+        <Avatar
+          src={params.row.picture.thumbnail}
+          alt={`${params.row.name.first} ${params.row.name.last}`}
+        />
+      );
+    },
   },
   {
     field: "name",
     headerName: "Name",
     flex: 1,
     minWidth: 180,
-    valueGetter: (params) => `${params.row.name.first} ${params.row.name.last}`,
-    renderCell: (params: GridRenderCellParams<Customer>) => (
-      <Box sx={{ display: "flex", flexDirection: "column" }}>
-        <Typography variant="body2" sx={{ fontWeight: 500 }}>
-          {`${params.row.name.first} ${params.row.name.last}`}
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          {params.row.login.username}
-        </Typography>
-      </Box>
-    ),
+    valueGetter: (params) => {
+      if (!params.row || !params.row.name) return "";
+      return `${params.row.name.first} ${params.row.name.last}`;
+    },
+    renderCell: (params: GridRenderCellParams<Customer>) => {
+      if (!params.row || !params.row.name || !params.row.login) {
+        return <Typography variant="body2">Loading...</Typography>;
+      }
+      return (
+        <Box sx={{ display: "flex", flexDirection: "column" }}>
+          <Typography variant="body2" sx={{ fontWeight: 500 }}>
+            {`${params.row.name.first} ${params.row.name.last}`}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {params.row.login.username}
+          </Typography>
+        </Box>
+      );
+    },
   },
   {
     field: "email",
     headerName: "Email",
     flex: 1.5,
     minWidth: 220,
-    renderCell: (params: GridRenderCellParams<Customer>) => (
-      <Stack direction="row" alignItems="center" spacing={1}>
-        <MailOutlineRoundedIcon fontSize="small" color="action" />
-        <Typography variant="body2">{params.row.email}</Typography>
-      </Stack>
-    ),
+    renderCell: (params: GridRenderCellParams<Customer>) => {
+      if (!params.row || !params.row.email) {
+        return <Typography variant="body2">-</Typography>;
+      }
+      return (
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <MailOutlineRoundedIcon fontSize="small" color="action" />
+          <Typography variant="body2">{params.row.email}</Typography>
+        </Stack>
+      );
+    },
   },
   {
     field: "phone",
     headerName: "Phone",
     width: 160,
-    renderCell: (params: GridRenderCellParams<Customer>) => (
-      <Stack direction="row" alignItems="center" spacing={1}>
-        <PhoneRoundedIcon fontSize="small" color="action" />
-        <Typography variant="body2">{params.row.phone}</Typography>
-      </Stack>
-    ),
+    renderCell: (params: GridRenderCellParams<Customer>) => {
+      if (!params.row || !params.row.phone) {
+        return <Typography variant="body2">-</Typography>;
+      }
+      return (
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <PhoneRoundedIcon fontSize="small" color="action" />
+          <Typography variant="body2">{params.row.phone}</Typography>
+        </Stack>
+      );
+    },
   },
   {
     field: "location",
     headerName: "Location",
     flex: 1,
     minWidth: 180,
-    valueGetter: (params) =>
-      `${params.row.location.city}, ${params.row.location.country}`,
-    renderCell: (params: GridRenderCellParams<Customer>) => (
-      <Typography variant="body2">
-        {params.row.location.city}, {params.row.location.country}
-      </Typography>
-    ),
+    valueGetter: (params) => {
+      if (!params.row || !params.row.location) return "";
+      return `${params.row.location.city}, ${params.row.location.country}`;
+    },
+    renderCell: (params: GridRenderCellParams<Customer>) => {
+      if (!params.row || !params.row.location) {
+        return <Typography variant="body2">-</Typography>;
+      }
+      return (
+        <Typography variant="body2">
+          {params.row.location.city}, {params.row.location.country}
+        </Typography>
+      );
+    },
   },
   {
     field: "registered",
     headerName: "Customer Since",
     width: 150,
-    valueGetter: (params) => new Date(params.row.registered.date),
+    valueGetter: (params) => {
+      if (!params.row || !params.row.registered || !params.row.registered.date)
+        return null;
+      return new Date(params.row.registered.date);
+    },
     renderCell: (params: GridRenderCellParams<Customer>) => {
+      if (
+        !params.row ||
+        !params.row.registered ||
+        !params.row.registered.date
+      ) {
+        return <Typography variant="body2">-</Typography>;
+      }
+
       const date = new Date(params.row.registered.date);
       const formattedDate = new Intl.DateTimeFormat("en-US", {
         year: "numeric",
