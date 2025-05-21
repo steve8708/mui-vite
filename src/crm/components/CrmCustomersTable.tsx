@@ -13,12 +13,23 @@ import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import Grid from "@mui/material/Grid";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Divider from "@mui/material/Divider";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import MailOutlineRoundedIcon from "@mui/icons-material/MailOutlineRounded";
 import PhoneRoundedIcon from "@mui/icons-material/PhoneRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { Customer, RandomUserResponse } from "../types/customer";
 
 // Number of customers to fetch
@@ -176,24 +187,304 @@ const columns: GridColDef[] = [
   },
   {
     field: "actions",
-    headerName: "",
-    width: 60,
+    headerName: "Actions",
+    width: 120,
     sortable: false,
     filterable: false,
     disableColumnMenu: true,
-    renderCell: () => (
-      <IconButton size="small" aria-label="more options">
-        <MoreVertRoundedIcon fontSize="small" />
-      </IconButton>
+    renderCell: (params: GridRenderCellParams<Customer>) => (
+      <Stack direction="row" spacing={1}>
+        <IconButton
+          size="small"
+          aria-label="edit customer"
+          onClick={(event) => {
+            event.stopPropagation();
+            if (params.row) {
+              return params.api.publishEvent("rowEditStart", params as any);
+            }
+          }}
+        >
+          <EditRoundedIcon fontSize="small" />
+        </IconButton>
+        <IconButton size="small" aria-label="more options">
+          <MoreVertRoundedIcon fontSize="small" />
+        </IconButton>
+      </Stack>
     ),
   },
 ];
+
+// Form with fields for editing customer data
+interface EditCustomerFormProps {
+  customer: Customer | null;
+  open: boolean;
+  onClose: () => void;
+  onSave: (updatedCustomer: Customer) => void;
+}
+
+function EditCustomerForm({
+  customer,
+  open,
+  onClose,
+  onSave,
+}: EditCustomerFormProps) {
+  const [formValues, setFormValues] = React.useState<Partial<Customer> | null>(
+    null,
+  );
+
+  // Initialize form values when customer data changes
+  React.useEffect(() => {
+    if (customer) {
+      setFormValues({ ...customer });
+    }
+  }, [customer]);
+
+  // Handle form field changes
+  const handleChange = (field: string, value: any) => {
+    if (!formValues) return;
+
+    if (field.includes(".")) {
+      const [parent, child] = field.split(".");
+      setFormValues({
+        ...formValues,
+        [parent]: {
+          ...formValues[parent as keyof Customer],
+          [child]: value,
+        },
+      });
+    } else {
+      setFormValues({
+        ...formValues,
+        [field]: value,
+      });
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (formValues && customer) {
+      onSave({ ...customer, ...formValues });
+    }
+    onClose();
+  };
+
+  if (!customer || !formValues) return null;
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+      <DialogTitle>Edit Customer Details</DialogTitle>
+      <form onSubmit={handleSubmit}>
+        <DialogContent dividers>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Typography variant="subtitle2" gutterBottom>
+                Personal Information
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="Title"
+                fullWidth
+                value={formValues.name?.title || ""}
+                onChange={(e) => handleChange("name.title", e.target.value)}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="First Name"
+                fullWidth
+                required
+                value={formValues.name?.first || ""}
+                onChange={(e) => handleChange("name.first", e.target.value)}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="Last Name"
+                fullWidth
+                required
+                value={formValues.name?.last || ""}
+                onChange={(e) => handleChange("name.last", e.target.value)}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Email"
+                fullWidth
+                required
+                value={formValues.email || ""}
+                onChange={(e) => handleChange("email", e.target.value)}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Username"
+                fullWidth
+                required
+                value={formValues.login?.username || ""}
+                onChange={(e) => handleChange("login.username", e.target.value)}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Phone"
+                fullWidth
+                required
+                value={formValues.phone || ""}
+                onChange={(e) => handleChange("phone", e.target.value)}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Cell"
+                fullWidth
+                value={formValues.cell || ""}
+                onChange={(e) => handleChange("cell", e.target.value)}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>
+                Location
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="City"
+                fullWidth
+                required
+                value={formValues.location?.city || ""}
+                onChange={(e) => handleChange("location.city", e.target.value)}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="State"
+                fullWidth
+                value={formValues.location?.state || ""}
+                onChange={(e) => handleChange("location.state", e.target.value)}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="Country"
+                fullWidth
+                required
+                value={formValues.location?.country || ""}
+                onChange={(e) =>
+                  handleChange("location.country", e.target.value)
+                }
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>
+                Customer Status
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Status</InputLabel>
+                <Select
+                  value="Active" // This would be an actual status field in a real app
+                  label="Status"
+                >
+                  <MenuItem value="Active">Active</MenuItem>
+                  <MenuItem value="Inactive">Inactive</MenuItem>
+                  <MenuItem value="New">New</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Customer Since"
+                fullWidth
+                disabled
+                value={new Date(
+                  formValues.registered?.date || "",
+                ).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={onClose} color="inherit">
+            Cancel
+          </Button>
+          <Button type="submit" variant="contained">
+            Save Changes
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
+  );
+}
 
 export default function CrmCustomersTable() {
   const [customers, setCustomers] = React.useState<Customer[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<string | null>(null);
   const [searchTerm, setSearchTerm] = React.useState<string>("");
+  const [editModalOpen, setEditModalOpen] = React.useState<boolean>(false);
+  const [selectedCustomer, setSelectedCustomer] =
+    React.useState<Customer | null>(null);
+
+  // Handle opening the edit modal when row edit button is clicked
+  const handleRowEditStart = React.useCallback(
+    (params: GridRenderCellParams) => {
+      setSelectedCustomer(params.row as Customer);
+      setEditModalOpen(true);
+    },
+    [],
+  );
+
+  // Register event listener for edit button click
+  React.useEffect(() => {
+    if (filteredCustomers.length > 0) {
+      const apiRef =
+        document.querySelector(".MuiDataGrid-root")?.__reactProps$?.[
+          "children"
+        ][0]?.props?.apiRef;
+      if (apiRef) {
+        apiRef.subscribeEvent("rowEditStart", handleRowEditStart);
+        return () => {
+          apiRef.unsubscribeEvent("rowEditStart", handleRowEditStart);
+        };
+      }
+    }
+  }, [filteredCustomers.length, handleRowEditStart]);
+
+  // Handle saving the edited customer data
+  const handleSaveCustomer = (updatedCustomer: Customer) => {
+    setCustomers((prevCustomers) =>
+      prevCustomers.map((customer) =>
+        customer.login.uuid === updatedCustomer.login.uuid
+          ? updatedCustomer
+          : customer,
+      ),
+    );
+  };
 
   // Fetch customer data from randomuser.me API
   const fetchCustomers = React.useCallback(async () => {
@@ -291,108 +582,118 @@ export default function CrmCustomersTable() {
   }
 
   return (
-    <Card
-      variant="outlined"
-      sx={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <CardContent sx={{ pb: 0 }}>
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          justifyContent="space-between"
-          alignItems={{ xs: "flex-start", sm: "center" }}
-          spacing={2}
-          sx={{ mb: 2 }}
-        >
-          <Typography variant="h6" component="h3">
-            Customer Directory
-          </Typography>
-          <Stack direction="row" spacing={1}>
-            <TextField
-              placeholder="Search customers..."
-              size="small"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchRoundedIcon fontSize="small" />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ width: { xs: "100%", sm: 220 } }}
-            />
-            <Button
-              variant="outlined"
-              startIcon={<RefreshRoundedIcon />}
-              onClick={fetchCustomers}
-              disabled={loading}
-            >
-              Refresh
-            </Button>
-            <Button variant="contained" startIcon={<AddRoundedIcon />}>
-              Add
-            </Button>
+    <>
+      <Card
+        variant="outlined"
+        sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <CardContent sx={{ pb: 0 }}>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            justifyContent="space-between"
+            alignItems={{ xs: "flex-start", sm: "center" }}
+            spacing={2}
+            sx={{ mb: 2 }}
+          >
+            <Typography variant="h6" component="h3">
+              Customer Directory
+            </Typography>
+            <Stack direction="row" spacing={1}>
+              <TextField
+                placeholder="Search customers..."
+                size="small"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchRoundedIcon fontSize="small" />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ width: { xs: "100%", sm: 220 } }}
+              />
+              <Button
+                variant="outlined"
+                startIcon={<RefreshRoundedIcon />}
+                onClick={fetchCustomers}
+                disabled={loading}
+              >
+                Refresh
+              </Button>
+              <Button variant="contained" startIcon={<AddRoundedIcon />}>
+                Add
+              </Button>
+            </Stack>
           </Stack>
-        </Stack>
-      </CardContent>
+        </CardContent>
 
-      {/* Show message when filtering returns no results */}
-      {filteredCustomers.length === 0 && !loading && (
-        <Box sx={{ p: 3, textAlign: "center" }}>
-          <Typography color="text.secondary">
-            No customers found matching your search criteria.
-          </Typography>
-        </Box>
-      )}
+        {/* Show message when filtering returns no results */}
+        {filteredCustomers.length === 0 && !loading && (
+          <Box sx={{ p: 3, textAlign: "center" }}>
+            <Typography color="text.secondary">
+              No customers found matching your search criteria.
+            </Typography>
+          </Box>
+        )}
 
-      {/* Show DataGrid when we have customers */}
-      {filteredCustomers.length > 0 && (
-        <Box sx={{ flexGrow: 1, position: "relative" }}>
-          {loading && (
-            <Box
-              sx={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "rgba(255, 255, 255, 0.7)",
-                zIndex: 1,
+        {/* Show DataGrid when we have customers */}
+        {filteredCustomers.length > 0 && (
+          <Box sx={{ flexGrow: 1, position: "relative" }}>
+            {loading && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "rgba(255, 255, 255, 0.7)",
+                  zIndex: 1,
+                }}
+              >
+                <CircularProgress />
+              </Box>
+            )}
+            <DataGrid
+              rows={rowsWithIds}
+              columns={columns}
+              checkboxSelection
+              initialState={{
+                pagination: { paginationModel: { pageSize: 10 } },
               }}
-            >
-              <CircularProgress />
-            </Box>
-          )}
-          <DataGrid
-            rows={rowsWithIds}
-            columns={columns}
-            checkboxSelection
-            initialState={{
-              pagination: { paginationModel: { pageSize: 10 } },
-            }}
-            pageSizeOptions={[5, 10, 25]}
-            disableColumnResize
-            density="standard"
-            autoHeight
-            getRowClassName={(params) =>
-              params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
-            }
-            sx={{
-              border: "none",
-              "& .MuiDataGrid-columnHeaders": {
-                backgroundColor: (theme) => theme.palette.action.hover,
-              },
-            }}
-          />
-        </Box>
-      )}
-    </Card>
+              pageSizeOptions={[5, 10, 25]}
+              disableColumnResize
+              density="standard"
+              autoHeight
+              getRowClassName={(params) =>
+                params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
+              }
+              sx={{
+                border: "none",
+                "& .MuiDataGrid-columnHeaders": {
+                  backgroundColor: (theme) => theme.palette.action.hover,
+                },
+              }}
+            />
+          </Box>
+        )}
+      </Card>
+
+      {/* Edit Customer Modal */}
+      <EditCustomerForm
+        customer={selectedCustomer}
+        open={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        onSave={handleSaveCustomer}
+      />
+    </>
   );
 }
