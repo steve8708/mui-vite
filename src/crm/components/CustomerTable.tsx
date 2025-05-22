@@ -8,7 +8,20 @@ import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import EditIcon from "@mui/icons-material/Edit";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import TextField from "@mui/material/TextField";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Grid from "@mui/material/Grid";
 import { GridColDef } from "@mui/x-data-grid";
 
 interface RandomUserName {
@@ -109,6 +122,91 @@ export default function CustomerTable() {
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalRows, setTotalRows] = useState<number>(0);
 
+  // Edit modal states
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] =
+    useState<CustomerTableRow | null>(null);
+  const [formData, setFormData] = useState<Partial<CustomerTableRow>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleOpenEditModal = (customer: CustomerTableRow) => {
+    setSelectedCustomer(customer);
+    setFormData({
+      name: customer.name,
+      email: customer.email,
+      phone: customer.phone,
+      location: customer.location,
+      country: customer.country,
+      username: customer.username,
+      status: customer.status,
+    });
+    setOpenEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setOpenEditModal(false);
+    setSelectedCustomer(null);
+    setFormData({});
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleStatusChange = (
+    e: React.ChangeEvent<{ name?: string; value: unknown }>,
+  ) => {
+    setFormData({
+      ...formData,
+      status: e.target.value as "Active" | "Inactive",
+    });
+  };
+
+  const handleSaveChanges = () => {
+    if (!selectedCustomer) return;
+
+    setIsSubmitting(true);
+
+    // Simulate API update with a timeout
+    setTimeout(() => {
+      // Update the rows state with the edited data
+      const updatedRows = rows.map((row) => {
+        if (row.id === selectedCustomer.id) {
+          return {
+            ...row,
+            ...formData,
+          };
+        }
+        return row;
+      });
+
+      setRows(updatedRows);
+      setIsSubmitting(false);
+      handleCloseEditModal();
+
+      // You could add a notification/alert here to indicate success
+    }, 800);
+  };
+
+  const renderEditButton = (params: any) => {
+    return (
+      <IconButton
+        color="primary"
+        onClick={() => handleOpenEditModal(params.row)}
+        size="small"
+        aria-label="edit customer"
+      >
+        <EditIcon fontSize="small" />
+      </IconButton>
+    );
+  };
+
   const columns: GridColDef[] = [
     {
       field: "avatar",
@@ -142,6 +240,14 @@ export default function CustomerTable() {
       width: 110,
       renderCell: (params) =>
         renderStatus(params.value as "Active" | "Inactive"),
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 100,
+      renderCell: renderEditButton,
+      sortable: false,
+      filterable: false,
     },
   ];
 
@@ -213,57 +319,201 @@ export default function CustomerTable() {
   }
 
   return (
-    <Box sx={{ width: "100%", height: 650 }}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 2,
-        }}
-      >
-        <Typography variant="h6" component="h2">
-          Customer Database
-        </Typography>
-        <Button
-          startIcon={<RefreshIcon />}
-          onClick={handleRefresh}
-          disabled={loading}
-          variant="outlined"
+    <>
+      <Box sx={{ width: "100%", height: 650 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+          }}
         >
-          Refresh Data
-        </Button>
+          <Typography variant="h6" component="h2">
+            Customer Database
+          </Typography>
+          <Button
+            startIcon={<RefreshIcon />}
+            onClick={handleRefresh}
+            disabled={loading}
+            variant="outlined"
+          >
+            Refresh Data
+          </Button>
+        </Box>
+
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          loading={loading}
+          pagination
+          pageSizeOptions={[5, 10, 25, 50, 100]}
+          paginationModel={{ page, pageSize }}
+          onPaginationModelChange={(model) => {
+            setPage(model.page);
+            setPageSize(model.pageSize);
+          }}
+          checkboxSelection
+          disableRowSelectionOnClick
+          getRowClassName={(params) =>
+            params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
+          }
+          initialState={{
+            pagination: { paginationModel: { pageSize: 10 } },
+          }}
+          density="standard"
+          sx={{
+            "& .MuiDataGrid-cell:focus-within": {
+              outline: "none !important",
+            },
+          }}
+          slotProps={{
+            loadingOverlay: {
+              sx: { backgroundColor: "rgba(255,255,255,0.8)" },
+            },
+          }}
+        />
       </Box>
 
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        loading={loading}
-        pagination
-        pageSizeOptions={[5, 10, 25, 50, 100]}
-        paginationModel={{ page, pageSize }}
-        onPaginationModelChange={(model) => {
-          setPage(model.page);
-          setPageSize(model.pageSize);
-        }}
-        checkboxSelection
-        disableRowSelectionOnClick
-        getRowClassName={(params) =>
-          params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
-        }
-        initialState={{
-          pagination: { paginationModel: { pageSize: 10 } },
-        }}
-        density="standard"
-        sx={{
-          "& .MuiDataGrid-cell:focus-within": {
-            outline: "none !important",
-          },
-        }}
-        slotProps={{
-          loadingOverlay: { sx: { backgroundColor: "rgba(255,255,255,0.8)" } },
-        }}
-      />
-    </Box>
+      {/* Edit Customer Modal */}
+      <Dialog
+        open={openEditModal}
+        onClose={handleCloseEditModal}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Edit Customer
+          {selectedCustomer && (
+            <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+              <Avatar
+                src={selectedCustomer.avatar.src}
+                alt={selectedCustomer.avatar.alt}
+                sx={{ mr: 1.5, width: 40, height: 40 }}
+              />
+              <Typography variant="subtitle1" component="span">
+                {selectedCustomer.name}
+              </Typography>
+            </Box>
+          )}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mb: 2 }}>
+            Update the customer information below.
+          </DialogContentText>
+
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                name="name"
+                label="Full Name"
+                type="text"
+                fullWidth
+                variant="outlined"
+                value={formData.name || ""}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                margin="dense"
+                id="email"
+                name="email"
+                label="Email Address"
+                type="email"
+                fullWidth
+                variant="outlined"
+                value={formData.email || ""}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                margin="dense"
+                id="phone"
+                name="phone"
+                label="Phone Number"
+                type="text"
+                fullWidth
+                variant="outlined"
+                value={formData.phone || ""}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                margin="dense"
+                id="username"
+                name="username"
+                label="Username"
+                type="text"
+                fullWidth
+                variant="outlined"
+                value={formData.username || ""}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                margin="dense"
+                id="location"
+                name="location"
+                label="Address"
+                type="text"
+                fullWidth
+                variant="outlined"
+                value={formData.location || ""}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                margin="dense"
+                id="country"
+                name="country"
+                label="Country"
+                type="text"
+                fullWidth
+                variant="outlined"
+                value={formData.country || ""}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth margin="dense">
+                <InputLabel id="status-label">Status</InputLabel>
+                <Select
+                  labelId="status-label"
+                  id="status"
+                  name="status"
+                  value={formData.status || ""}
+                  label="Status"
+                  onChange={handleStatusChange}
+                >
+                  <MenuItem value="Active">Active</MenuItem>
+                  <MenuItem value="Inactive">Inactive</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          <Button onClick={handleCloseEditModal} color="inherit">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSaveChanges}
+            variant="contained"
+            color="primary"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Saving..." : "Save Changes"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }
