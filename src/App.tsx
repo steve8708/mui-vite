@@ -32,7 +32,8 @@ export default function App() {
     <BrowserRouter>
       <CssBaseline enableColorScheme />
       <Routes>
-        <Route path="/*" element={<CrmDashboard />} />
+        <Route path="/" element={<TodoApp />} />
+        <Route path="/crm/*" element={<CrmDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
