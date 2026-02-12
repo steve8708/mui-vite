@@ -58,6 +58,7 @@ export default function CrmStatCard({
         : theme.palette.error.dark,
   };
 
+
   const labelColors = {
     up: "success" as const,
     down: "error" as const,
