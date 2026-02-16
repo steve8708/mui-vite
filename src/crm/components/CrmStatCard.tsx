@@ -10,6 +10,7 @@ import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
 import { SparkLineChart } from "@mui/x-charts/SparkLineChart";
 import { areaElementClasses } from "@mui/x-charts/LineChart";
+import { getCrmSettings } from "../utils/crmSettings";
 
 export type CrmStatCardProps = {
   title: string;
@@ -30,20 +31,6 @@ function AreaGradient({ color, id }: { color: string; id: string }) {
     </defs>
   );
 }
-
-const getCrmSettings = () => {
-  try {
-    const stored = localStorage.getItem("crmSettings");
-    if (!stored) {
-      const defaults = { here: true };
-      localStorage.setItem("crmSettings", JSON.stringify(defaults));
-      return defaults;
-    }
-    return JSON.parse(stored);
-  } catch {
-    return { here: true };
-  }
-};
 
 export default function CrmStatCard({
   title,
