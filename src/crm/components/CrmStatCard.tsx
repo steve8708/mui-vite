@@ -31,6 +31,20 @@ function AreaGradient({ color, id }: { color: string; id: string }) {
   );
 }
 
+const getCrmSettings = () => {
+  try {
+    const stored = localStorage.getItem("crmSettings");
+    if (!stored) {
+      const defaults = { here: true };
+      localStorage.setItem("crmSettings", JSON.stringify(defaults));
+      return defaults;
+    }
+    return JSON.parse(stored);
+  } catch {
+    return { here: true };
+  }
+};
+
 export default function CrmStatCard({
   title,
   value,
@@ -40,24 +54,15 @@ export default function CrmStatCard({
   data,
 }: CrmStatCardProps) {
   const theme = useTheme();
-
-  React.useEffect(() => {
-    const crmSettings = localStorage.getItem("crmSettings");
-    if (!crmSettings) {
-      localStorage.setItem("crmSettings", JSON.stringify({
-        here: true,
-      }));
-    }
-  }, [])
-
+  const crmSettings = React.useMemo(getCrmSettings, []);
 
   const trendColors = {
     up:
-      theme.palette.mode === "light" && localStorage.getItem("crmSettings") && JSON.parse(localStorage.getItem("crmSettings") || "{}").here
+      theme.palette.mode === "light" && crmSettings.here
         ? theme.palette.success.main
         : theme.palette.success.dark,
     down:
-      theme.palette.mode === "light"
+      theme.palette.mode === "light" && crmSettings.here
         ? theme.palette.error.main
         : theme.palette.error.dark,
   };
